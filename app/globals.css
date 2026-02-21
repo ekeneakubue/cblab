@@ -10,6 +10,19 @@
   --color-foreground: var(--foreground);
   --font-sans: var(--font-geist-sans);
   --font-mono: var(--font-geist-mono);
+
+  /* Brand scale derived from logo cyan-blue #29ABE2 */
+  --color-brand-50:  #e8f7fd;
+  --color-brand-100: #cceefa;
+  --color-brand-200: #99ddf5;
+  --color-brand-300: #55c8ee;
+  --color-brand-400: #29abe2;
+  --color-brand-500: #1a8bbf;
+  --color-brand-600: #146e99;
+  --color-brand-700: #0f5273;
+  --color-brand-800: #0a374d;
+  --color-brand-900: #061f2b;
+  --color-brand-950: #030f16;
 }
 
 @media (prefers-color-scheme: dark) {
@@ -23,4 +36,47 @@ body {
   background: var(--background);
   color: var(--foreground);
   font-family: Arial, Helvetica, sans-serif;
+}
+
+/* Hero section animations */
+@keyframes hero-fade-in-up {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes hero-blur-in {
+  from {
+    opacity: 0;
+    filter: blur(8px);
+  }
+  to {
+    opacity: 1;
+    filter: blur(0);
+  }
+}
+
+.hero-animate-pill {
+  animation: hero-fade-in-up 0.5s ease-out both;
+}
+
+.hero-animate-title {
+  animation: hero-fade-in-up 0.6s ease-out 0.1s both;
+}
+
+.hero-animate-desc {
+  animation: hero-fade-in-up 0.6s ease-out 0.2s both;
+}
+
+.hero-animate-blob {
+  animation: hero-blur-in 1.2s ease-out 0.2s both;
+}
+
+.hero-animate-cta {
+  animation: hero-fade-in-up 0.6s ease-out 0.25s both;
 }

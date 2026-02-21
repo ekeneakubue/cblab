@@ -1,0 +1,162 @@
+import Image from "next/image";
+import Link from "next/link";
+import Navbar from "../components/Navbar";
+import Footer from "../components/Footer";
+
+const posts = [
+  {
+    slug: "understanding-pcr-testing",
+    title: "Understanding PCR and molecular testing in the clinic",
+    excerpt: "A concise overview of how PCR and related molecular methods support diagnosis, from sample to result, and what to expect when your doctor orders these tests.",
+    date: "2025-02-15",
+    category: "Diagnostics",
+    readTime: "5 min read",
+    image: "https://images.unsplash.com/photo-1576086213369-97a306d36557?auto=format&fit=crop&w=800&q=80",
+  },
+  {
+    slug: "lab-results-explained",
+    title: "How to read your laboratory results",
+    excerpt: "Reference ranges, units, and flags—what they mean and when to follow up with your healthcare provider for a clearer picture of your health.",
+    date: "2025-02-08",
+    category: "Patient care",
+    readTime: "4 min read",
+    image: "https://images.unsplash.com/photo-1579684385127-1ef15d508118?auto=format&fit=crop&w=800&q=80",
+  },
+  {
+    slug: "role-of-biostatistics",
+    title: "The role of biostatistics in clinical research",
+    excerpt: "Why sound statistics matter in trials and cohort studies, and how our biostatistics team supports robust design and interpretation of biomedical data.",
+    date: "2025-01-28",
+    category: "Research",
+    readTime: "6 min read",
+    image: "https://images.unsplash.com/photo-1551288049-bebda4e38f71?auto=format&fit=crop&w=800&q=80",
+  },
+  {
+    slug: "blood-chemistry-basics",
+    title: "Blood chemistry panels: what’s in a routine panel?",
+    excerpt: "From liver and kidney function to lipids and glucose—a quick guide to common chemistry tests and what they help your doctor assess.",
+    date: "2025-01-20",
+    category: "Diagnostics",
+    readTime: "4 min read",
+    image: "https://images.unsplash.com/photo-1582719471384-894fbb16e074?auto=format&fit=crop&w=800&q=80",
+  },
+  {
+    slug: "genomics-in-diagnostics",
+    title: "Genomics in modern diagnostics",
+    excerpt: "How sequencing and genomic assays are increasingly used in diagnosis, screening, and treatment selection, and what that means for patients and providers.",
+    date: "2025-01-12",
+    category: "Research",
+    readTime: "7 min read",
+    image: "https://images.unsplash.com/photo-1614935151651-0bea6508db6b?auto=format&fit=crop&w=800&q=80",
+  },
+  {
+    slug: "quality-in-the-lab",
+    title: "Quality and accuracy in the laboratory",
+    excerpt: "How we maintain high standards through calibration, internal quality control, and participation in external quality assurance programs.",
+    date: "2025-01-05",
+    category: "Lab life",
+    readTime: "5 min read",
+    image: "https://images.unsplash.com/photo-1530026405186-ed1f139313f3?auto=format&fit=crop&w=800&q=80",
+  },
+];
+
+function formatDate(iso: string) {
+  return new Date(iso).toLocaleDateString("en-US", {
+    year: "numeric",
+    month: "short",
+    day: "numeric",
+  });
+}
+
+export default function BlogPage() {
+  return (
+    <div className="min-h-screen bg-brand-50 text-brand-950">
+      <Navbar />
+
+      <main>
+        {/* Hero */}
+        <section className="relative overflow-hidden bg-linear-to-br from-white via-brand-50 to-brand-100">
+          <div className="hero-animate-blob pointer-events-none absolute -top-24 -right-24 h-80 w-80 rounded-full bg-brand-200/40 blur-3xl" />
+          <div className="relative mx-auto max-w-6xl px-6 py-16 md:py-24">
+            <p className="hero-animate-pill inline-block rounded-full border border-brand-200 bg-brand-100 px-4 py-1.5 text-sm font-medium text-brand-600">
+              Insights & updates
+            </p>
+            <h1 className="hero-animate-title mt-4 text-4xl font-extrabold tracking-tight text-brand-950 md:text-5xl">
+              Blog
+            </h1>
+            <p className="hero-animate-desc mt-4 max-w-2xl text-lg leading-relaxed text-brand-600">
+              News, guides, and perspectives on laboratory diagnostics, research, and patient care from Classic Biomedical Laboratory.
+            </p>
+          </div>
+        </section>
+
+        {/* Posts grid */}
+        <section className="mx-auto max-w-6xl px-6 py-16 md:py-20">
+          <div className="grid gap-8 sm:grid-cols-2 lg:grid-cols-3">
+            {posts.map((post) => (
+              <Link
+                key={post.slug}
+                href={`/blog/${post.slug}`}
+                className="group flex flex-col overflow-hidden rounded-2xl border border-brand-100 bg-white shadow-sm transition-all duration-300 hover:border-brand-200 hover:shadow-lg hover:shadow-brand-100/50"
+              >
+                {/* Image */}
+                <div className="relative aspect-16/10 w-full overflow-hidden bg-brand-100">
+                  <Image
+                    src={post.image}
+                    alt=""
+                    fill
+                    className="object-cover transition-transform duration-300 group-hover:scale-105"
+                    sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
+                  />
+                </div>
+                {/* Top accent */}
+                <div className="h-1 w-full bg-linear-to-r from-brand-300 to-brand-400 opacity-80 group-hover:from-brand-400 group-hover:to-brand-500" />
+                <div className="flex flex-1 flex-col p-6">
+                  <div className="flex flex-wrap items-center gap-2 text-xs">
+                    <span className="rounded-full bg-brand-100 px-2.5 py-1 font-medium text-brand-600">
+                      {post.category}
+                    </span>
+                    <span className="text-brand-400">{post.readTime}</span>
+                  </div>
+                  <time
+                    dateTime={post.date}
+                    className="mt-2 block text-xs font-medium text-brand-400"
+                  >
+                    {formatDate(post.date)}
+                  </time>
+                  <h2 className="mt-2 text-lg font-bold leading-snug text-brand-950 transition-colors group-hover:text-brand-600">
+                    {post.title}
+                  </h2>
+                  <p className="mt-3 flex-1 text-sm leading-relaxed text-brand-600 line-clamp-3">
+                    {post.excerpt}
+                  </p>
+                  <span className="mt-4 inline-flex items-center gap-1 text-sm font-semibold text-brand-500 group-hover:text-brand-600">
+                    Read more
+                    <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 transition-transform group-hover:translate-x-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                      <path strokeLinecap="round" strokeLinejoin="round" d="M17 8l4 4m0 0l-4 4m4-4H3" />
+                    </svg>
+                  </span>
+                </div>
+              </Link>
+            ))}
+          </div>
+        </section>
+
+        {/* CTA */}
+        <section className="border-t border-brand-100 bg-white px-6 py-12">
+          <div className="mx-auto max-w-3xl text-center">
+            <p className="text-brand-600">
+              Have a topic you’d like us to cover?{" "}
+              <Link href="/#contact" className="font-semibold text-brand-500 underline hover:text-brand-600">
+                Get in touch
+              </Link>
+              .
+            </p>
+          </div>
+        </section>
+      </main>
+
+      <Footer />
+    </div>
+  );
+}
