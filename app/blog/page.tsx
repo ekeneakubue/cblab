@@ -1,64 +1,10 @@
 import Image from "next/image";
 import Link from "next/link";
+import { prisma } from "@/lib/prisma";
 import Navbar from "../components/Navbar";
 import Footer from "../components/Footer";
 
-const posts = [
-  {
-    slug: "understanding-pcr-testing",
-    title: "Understanding PCR and molecular testing in the clinic",
-    excerpt: "A concise overview of how PCR and related molecular methods support diagnosis, from sample to result, and what to expect when your doctor orders these tests.",
-    date: "2025-02-15",
-    category: "Diagnostics",
-    readTime: "5 min read",
-    image: "https://images.unsplash.com/photo-1576086213369-97a306d36557?auto=format&fit=crop&w=800&q=80",
-  },
-  {
-    slug: "lab-results-explained",
-    title: "How to read your laboratory results",
-    excerpt: "Reference ranges, units, and flags—what they mean and when to follow up with your healthcare provider for a clearer picture of your health.",
-    date: "2025-02-08",
-    category: "Patient care",
-    readTime: "4 min read",
-    image: "https://images.unsplash.com/photo-1579684385127-1ef15d508118?auto=format&fit=crop&w=800&q=80",
-  },
-  {
-    slug: "role-of-biostatistics",
-    title: "The role of biostatistics in clinical research",
-    excerpt: "Why sound statistics matter in trials and cohort studies, and how our biostatistics team supports robust design and interpretation of biomedical data.",
-    date: "2025-01-28",
-    category: "Research",
-    readTime: "6 min read",
-    image: "https://images.unsplash.com/photo-1551288049-bebda4e38f71?auto=format&fit=crop&w=800&q=80",
-  },
-  {
-    slug: "blood-chemistry-basics",
-    title: "Blood chemistry panels: what’s in a routine panel?",
-    excerpt: "From liver and kidney function to lipids and glucose—a quick guide to common chemistry tests and what they help your doctor assess.",
-    date: "2025-01-20",
-    category: "Diagnostics",
-    readTime: "4 min read",
-    image: "https://images.unsplash.com/photo-1582719471384-894fbb16e074?auto=format&fit=crop&w=800&q=80",
-  },
-  {
-    slug: "genomics-in-diagnostics",
-    title: "Genomics in modern diagnostics",
-    excerpt: "How sequencing and genomic assays are increasingly used in diagnosis, screening, and treatment selection, and what that means for patients and providers.",
-    date: "2025-01-12",
-    category: "Research",
-    readTime: "7 min read",
-    image: "https://images.unsplash.com/photo-1614935151651-0bea6508db6b?auto=format&fit=crop&w=800&q=80",
-  },
-  {
-    slug: "quality-in-the-lab",
-    title: "Quality and accuracy in the laboratory",
-    excerpt: "How we maintain high standards through calibration, internal quality control, and participation in external quality assurance programs.",
-    date: "2025-01-05",
-    category: "Lab life",
-    readTime: "5 min read",
-    image: "https://images.unsplash.com/photo-1530026405186-ed1f139313f3?auto=format&fit=crop&w=800&q=80",
-  },
-];
+const PLACEHOLDER_IMAGE = "https://images.unsplash.com/photo-1576086213369-97a306d36557?auto=format&fit=crop&w=800&q=80";
 
 function formatDate(iso: string) {
   return new Date(iso).toLocaleDateString("en-US", {
@@ -68,7 +14,37 @@ function formatDate(iso: string) {
   });
 }
 
-export default function BlogPage() {
+function excerptFromContent(content: string, maxLength = 160): string {
+  const plain = content.replace(/\s+/g, " ").trim();
+  if (plain.length <= maxLength) return plain;
+  return plain.slice(0, maxLength).trim() + "…";
+}
+
+export default async function BlogPage() {
+  const blogs = await prisma.blog.findMany({
+    orderBy: [{ publishedAt: "desc" }, { createdAt: "desc" }],
+    select: {
+      slug: true,
+      title: true,
+      category: true,
+      readTime: true,
+      imageUrl: true,
+      content: true,
+      publishedAt: true,
+      createdAt: true,
+    },
+  });
+
+  const posts = blogs.map((b) => ({
+    slug: b.slug,
+    title: b.title,
+    excerpt: excerptFromContent(b.content),
+    date: (b.publishedAt ?? b.createdAt).toISOString().slice(0, 10),
+    category: b.category,
+    readTime: b.readTime ?? "",
+    image: b.imageUrl ?? PLACEHOLDER_IMAGE,
+  }));
+
   return (
     <div className="min-h-screen bg-brand-50 text-brand-950">
       <Navbar />
@@ -85,13 +61,16 @@ export default function BlogPage() {
               Blog
             </h1>
             <p className="hero-animate-desc mt-4 max-w-2xl text-lg leading-relaxed text-brand-600">
-              News, guides, and perspectives on laboratory diagnostics, research, and patient care from Classic Biomedical Laboratory.
+              News, guides, and insights from our lab and the wider diagnostics and research community.
             </p>
           </div>
         </section>
 
         {/* Posts grid */}
         <section className="mx-auto max-w-6xl px-6 py-16 md:py-20">
+          {posts.length === 0 ? (
+            <p className="text-center text-brand-600">No posts yet. Check back soon.</p>
+          ) : (
           <div className="grid gap-8 sm:grid-cols-2 lg:grid-cols-3">
             {posts.map((post) => (
               <Link
@@ -140,6 +119,7 @@ export default function BlogPage() {
               </Link>
             ))}
           </div>
+          )}
         </section>
 
         {/* CTA */}

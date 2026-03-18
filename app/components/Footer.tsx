@@ -51,10 +51,18 @@ export default function Footer() {
               ))}
               <li>
                 <Link
-                  href="/login"
+                  href="/patient"
                   className="text-sm text-brand-200 transition hover:text-white"
                 >
-                  Login
+                  Patient portal
+                </Link>
+              </li>
+              <li>
+                <Link
+                  href="/staff/login"
+                  className="text-sm text-brand-200 transition hover:text-white"
+                >
+                  Staff Login
                 </Link>
               </li>
             </ul>

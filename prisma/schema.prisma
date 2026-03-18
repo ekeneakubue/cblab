@@ -1,0 +1,75 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider  = "postgresql"
+  url  	    = env("DATABASE_URL")
+}
+
+model User {
+  id        String   @id @default(cuid())
+  email     String   @unique
+  name      String
+  password  String
+  role      String   // staff | manager | admin | super-admin
+  imageUrl  String?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  testRequests TestRequest[]
+
+  @@map("users")
+}
+
+model Patient {
+  id           String    @id @default(cuid())
+  name         String
+  email        String?   @unique
+  phone        String?
+  password     String?
+  dateOfBirth  DateTime?
+  address      String?
+  medicalNotes String?
+  createdAt    DateTime  @default(now())
+  updatedAt    DateTime  @updatedAt
+
+  testRequests TestRequest[]
+
+  @@map("patients")
+}
+
+model TestRequest {
+  id            String   @id @default(cuid())
+  patientId     String
+  patient       Patient  @relation(fields: [patientId], references: [id], onDelete: Cascade)
+  requestedById String?
+  requestedBy   User?    @relation(fields: [requestedById], references: [id], onDelete: SetNull)
+  status        String   // pending | in_progress | completed
+  testType      String?
+  notes         String?
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  @@index([patientId])
+  @@index([requestedById])
+  @@index([status])
+  @@map("test_requests")
+}
+
+model Blog {
+  id         String    @id @default(cuid())
+  slug       String    @unique
+  title      String
+  category   String
+  readTime   String?
+  imageUrl   String?
+  content    String
+  publishedAt DateTime?
+  createdAt  DateTime  @default(now())
+  updatedAt  DateTime  @updatedAt
+
+  @@index([slug])
+  @@index([publishedAt])
+  @@map("blogs")
+}

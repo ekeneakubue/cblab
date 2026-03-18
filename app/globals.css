@@ -80,3 +80,32 @@ body {
 .hero-animate-cta {
   animation: hero-fade-in-up 0.6s ease-out 0.25s both;
 }
+
+/* About page hero */
+@keyframes about-hero-scale-in {
+  from {
+    opacity: 0;
+    transform: scale(0.96);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+@keyframes about-hero-float {
+  0%, 100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-8px);
+  }
+}
+
+.about-hero-bg {
+  animation: about-hero-scale-in 1s ease-out both;
+}
+
+.about-hero-float {
+  animation: about-hero-float 4s ease-in-out infinite;
+}

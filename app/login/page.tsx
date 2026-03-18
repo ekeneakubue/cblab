@@ -2,15 +2,39 @@
 
 import Image from "next/image";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { useState } from "react";
 
 export default function LoginPage() {
+  const router = useRouter();
   const [showPassword, setShowPassword] = useState(false);
   const [form, setForm] = useState({ email: "", password: "" });
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    // auth logic goes here
+    setError(null);
+    setLoading(true);
+    try {
+      const res = await fetch("/api/login", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email: form.email, password: form.password }),
+      });
+      const data = await res.json().catch(() => ({}));
+
+      if (!res.ok) {
+        setError(data.error ?? "Invalid email or password. Please try again.");
+        return;
+      }
+      router.push("/patient");
+      router.refresh();
+    } catch {
+      setError("Something went wrong. Please try again.");
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
@@ -82,6 +106,11 @@ export default function LoginPage() {
           </div>
 
           <form onSubmit={handleSubmit} className="space-y-5">
+            {error && (
+              <div className="rounded-lg border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700">
+                {error}
+              </div>
+            )}
 
             {/* Email */}
             <div>
@@ -96,6 +125,7 @@ export default function LoginPage() {
                 type="email"
                 autoComplete="email"
                 required
+                disabled={loading}
                 value={form.email}
                 onChange={(e) => setForm({ ...form, email: e.target.value })}
                 placeholder="you@example.com"
@@ -125,6 +155,7 @@ export default function LoginPage() {
                   type={showPassword ? "text" : "password"}
                   autoComplete="current-password"
                   required
+                  disabled={loading}
                   value={form.password}
                   onChange={(e) => setForm({ ...form, password: e.target.value })}
                   placeholder="••••••••"
@@ -133,7 +164,8 @@ export default function LoginPage() {
                 <button
                   type="button"
                   onClick={() => setShowPassword((v) => !v)}
-                  className="absolute right-3 top-1/2 -translate-y-1/2 text-brand-400 hover:text-brand-600"
+                  disabled={loading}
+                  className="absolute right-3 top-1/2 -translate-y-1/2 text-brand-400 hover:text-brand-600 disabled:cursor-not-allowed disabled:opacity-60"
                   aria-label={showPassword ? "Hide password" : "Show password"}
                 >
                   {showPassword ? (
@@ -162,9 +194,36 @@ export default function LoginPage() {
             {/* Submit */}
             <button
               type="submit"
-              className="w-full rounded-lg bg-brand-400 py-3 text-sm font-semibold text-white shadow-md shadow-brand-200 transition hover:bg-brand-500 active:scale-[0.98]"
+              disabled={loading}
+              aria-busy={loading}
+              className="w-full rounded-lg bg-brand-400 py-3 text-sm font-semibold text-white shadow-md shadow-brand-200 transition hover:bg-brand-500 active:scale-[0.98] disabled:cursor-not-allowed disabled:opacity-70 disabled:hover:bg-brand-400 disabled:active:scale-100"
             >
-              Sign in
+              <span className="inline-flex items-center justify-center gap-2">
+                {loading && (
+                  <svg
+                    className="h-4 w-4 animate-spin text-white"
+                    xmlns="http://www.w3.org/2000/svg"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                    aria-hidden="true"
+                  >
+                    <circle
+                      className="opacity-25"
+                      cx="12"
+                      cy="12"
+                      r="10"
+                      stroke="currentColor"
+                      strokeWidth="4"
+                    />
+                    <path
+                      className="opacity-75"
+                      fill="currentColor"
+                      d="M4 12a8 8 0 018-8v4a4 4 0 00-4 4H4z"
+                    />
+                  </svg>
+                )}
+                {loading ? "Signing in..." : "Sign in"}
+              </span>
             </button>
           </form>
 

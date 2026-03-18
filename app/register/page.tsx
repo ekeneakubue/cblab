@@ -3,6 +3,7 @@
 import Image from "next/image";
 import Link from "next/link";
 import { useState } from "react";
+import Modal from "../components/Modal";
 import { TermsModal, PrivacyModal } from "../components/LegalModals";
 
 export default function RegisterPage() {
@@ -18,10 +19,44 @@ export default function RegisterPage() {
     confirmPassword: "",
     acceptTerms: false,
   });
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+  const [successModalOpen, setSuccessModalOpen] = useState(false);
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    // registration logic goes here
+    setError(null);
+    if (form.password !== form.confirmPassword) {
+      setError("Passwords do not match.");
+      return;
+    }
+    if (form.password.length < 6) {
+      setError("Password must be at least 6 characters.");
+      return;
+    }
+    setLoading(true);
+    try {
+      const res = await fetch("/api/register", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          fullName: form.fullName,
+          email: form.email,
+          phone: form.phone || undefined,
+        }),
+      });
+      const data = await res.json().catch(() => ({}));
+      if (!res.ok) {
+        setError(data.error ?? "Failed to submit request. Please try again.");
+        setLoading(false);
+        return;
+      }
+      setSuccessModalOpen(true);
+    } catch {
+      setError("Something went wrong. Please try again.");
+    } finally {
+      setLoading(false);
+    }
   };
 
   const update = (key: keyof typeof form, value: string | boolean) =>
@@ -92,7 +127,11 @@ export default function RegisterPage() {
           </div>
 
           <form onSubmit={handleSubmit} className="grid grid-cols-1 gap-x-4 gap-y-4 sm:grid-cols-2">
-
+            {error && (
+              <div className="rounded-lg bg-red-50 px-4 py-3 text-sm text-red-700 sm:col-span-2">
+                {error}
+              </div>
+            )}
             <div>
               <label htmlFor="fullName" className="mb-1 block text-sm font-medium text-brand-800">
                 Full name
@@ -241,10 +280,10 @@ export default function RegisterPage() {
 
             <button
               type="submit"
-              disabled={!form.acceptTerms}
+              disabled={!form.acceptTerms || loading}
               className="w-full rounded-lg bg-brand-400 py-3 text-sm font-semibold text-white shadow-md shadow-brand-200 transition hover:bg-brand-500 active:scale-[0.98] disabled:cursor-not-allowed disabled:opacity-50 disabled:hover:bg-brand-400 sm:col-span-2"
             >
-              Request access
+              {loading ? "Submitting…" : "Request access"}
             </button>
           </form>
 
@@ -277,6 +316,24 @@ export default function RegisterPage() {
 
       <TermsModal open={termsOpen} onClose={() => setTermsOpen(false)} />
       <PrivacyModal open={privacyOpen} onClose={() => setPrivacyOpen(false)} />
+
+      <Modal
+        open={successModalOpen}
+        onClose={() => setSuccessModalOpen(false)}
+        title="Registration successful"
+      >
+        <div className="space-y-4">
+          <p className="text-brand-700">
+            Your access request has been submitted. You can now sign in to your account.
+          </p>
+          <Link
+            href="/login"
+            className="inline-flex items-center justify-center rounded-lg bg-brand-400 px-4 py-2.5 text-sm font-semibold text-white transition hover:bg-brand-500"
+          >
+            Go to login
+          </Link>
+        </div>
+      </Modal>
     </div>
   );
 }
