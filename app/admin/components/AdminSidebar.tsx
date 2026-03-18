@@ -62,11 +62,18 @@ const iconPaths: Record<string, React.ReactNode> = {
   ),
 };
 
-export default function AdminSidebar() {
+type AdminSidebarProps = {
+  className?: string;
+  onNavigate?: () => void;
+};
+
+export default function AdminSidebar({ className = "", onNavigate }: AdminSidebarProps) {
   const pathname = usePathname();
 
   return (
-    <aside className="fixed left-0 top-0 z-40 flex h-screen w-64 flex-col border-r border-brand-800 bg-brand-900">
+    <aside
+      className={"flex h-screen w-64 flex-col border-r border-brand-800 bg-brand-900 " + className}
+    >
       {/* Logo */}
       <div className="flex h-16 shrink-0 items-center gap-2 border-b border-brand-800 px-5">
         <Link href="/admin" className="flex items-center gap-2.5">
@@ -91,6 +98,7 @@ export default function AdminSidebar() {
             <Link
               key={href}
               href={href}
+              onClick={onNavigate}
               className={`flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium transition ${
                 isActive
                   ? "bg-brand-400/20 text-brand-200"
@@ -108,6 +116,7 @@ export default function AdminSidebar() {
       <div className="border-t border-brand-800 p-3">
         <Link
           href="/"
+          onClick={onNavigate}
           className="flex items-center gap-2 rounded-lg px-3 py-2 text-xs text-brand-400 transition hover:bg-brand-800 hover:text-brand-200"
         >
           <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>

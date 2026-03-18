@@ -1,7 +1,6 @@
 import { redirect } from "next/navigation";
 import { getStaffSession, canAccessAdminUI } from "@/lib/auth";
-import AdminHeader from "./components/AdminHeader";
-import AdminSidebar from "./components/AdminSidebar";
+import AdminShell from "./AdminShell";
 
 export default async function AdminLayout({
   children,
@@ -14,12 +13,6 @@ export default async function AdminLayout({
   }
 
   return (
-    <div className="min-h-screen bg-brand-50/50">
-      <AdminSidebar />
-      <div className="pl-64">
-        <AdminHeader />
-        <main className="p-6">{children}</main>
-      </div>
-    </div>
+    <AdminShell>{children}</AdminShell>
   );
 }

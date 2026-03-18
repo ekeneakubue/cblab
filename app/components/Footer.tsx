@@ -132,7 +132,7 @@ export default function Footer() {
             © {year} Classic Biomedical Laboratory. All rights reserved.
           </p>
           <nav className="flex flex-wrap items-center justify-center gap-1 text-sm text-brand-300 ">
-            Powered by:<Link href="https://gigoplanet.com" target="_blank" rel="noopener noreferrer" className="text-gray-50 transition hover:text-white">Gigoplanet Services Ltd.</Link>
+            Powered by:<Link href="https://gigolabs.vercel.app" target="_blank" rel="noopener noreferrer" className="text-gray-50 transition hover:text-white">GigoLabs</Link>
           </nav>
         </div>
       </div>

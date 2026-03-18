@@ -28,7 +28,7 @@ export default function PatientHeader() {
           <span className="hidden text-sm font-medium text-brand-600 sm:inline">Patient portal</span>
         </Link>
 
-        <nav className="flex items-center gap-1">
+        <nav className="flex min-w-0 items-center gap-1 overflow-x-auto">
           {navItems.map(({ label, href }) => {
             const isActive = pathname === href;
             return (
@@ -56,7 +56,7 @@ export default function PatientHeader() {
           </Link>
           <Link
             href="/"
-            className="rounded-lg px-3 py-2 text-xs font-medium text-brand-500 hover:bg-brand-50 hover:text-brand-700"
+            className="hidden rounded-lg px-3 py-2 text-xs font-medium text-brand-500 hover:bg-brand-50 hover:text-brand-700 sm:inline-flex"
           >
             Back to site
           </Link>
