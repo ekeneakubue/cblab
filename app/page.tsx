@@ -30,13 +30,13 @@ export default function Home() {
               </p>
               <div className="hero-animate-cta flex flex-wrap gap-4">
                 <a
-                  href="#contact"
+                  href="/contact"
                   className="rounded-lg bg-brand-400 px-7 py-3 text-sm font-semibold text-white shadow-md shadow-brand-200 transition hover:bg-brand-500"
                 >
                   Book a Test
                 </a>
                 <a
-                  href="#services"
+                  href="/services"
                   className="rounded-lg border border-brand-300 bg-white px-7 py-3 text-sm font-semibold text-brand-500 transition hover:border-brand-400 hover:text-brand-700"
                 >
                   Explore Services
