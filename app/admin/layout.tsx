@@ -1,5 +1,5 @@
 import { redirect } from "next/navigation";
-import { getStaffSession, canAccessAdmin } from "@/lib/auth";
+import { getStaffSession, canAccessAdminUI } from "@/lib/auth";
 import AdminHeader from "./components/AdminHeader";
 import AdminSidebar from "./components/AdminSidebar";
 
@@ -9,7 +9,7 @@ export default async function AdminLayout({
   children: React.ReactNode;
 }) {
   const session = await getStaffSession();
-  if (!canAccessAdmin(session)) {
+  if (!canAccessAdminUI(session)) {
     redirect("/staff/login");
   }
 

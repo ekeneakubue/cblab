@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server";
 import bcrypt from "bcryptjs";
 import { prisma } from "@/lib/prisma";
-import { requireSuperAdmin } from "@/lib/auth";
+import { requireAdminSession } from "@/lib/auth";
 
 const ROLES = ["staff", "manager", "admin", "super-admin"] as const;
 
@@ -9,7 +9,7 @@ export async function GET(
   _request: Request,
   { params }: { params: Promise<{ id: string }> }
 ) {
-  const session = await requireSuperAdmin();
+  const session = await requireAdminSession();
   if (!session) return NextResponse.json({ error: "Forbidden" }, { status: 403 });
   try {
     const { id } = await params;
@@ -27,6 +27,9 @@ export async function GET(
     if (!user) {
       return NextResponse.json({ error: "User not found" }, { status: 404 });
     }
+    if (session.role === "admin" && user.role === "super-admin") {
+      return NextResponse.json({ error: "User not found" }, { status: 404 });
+    }
     return NextResponse.json(user);
   } catch (error) {
     console.error("Fetch user error:", error);
@@ -41,7 +44,7 @@ export async function PATCH(
   request: Request,
   { params }: { params: Promise<{ id: string }> }
 ) {
-  const session = await requireSuperAdmin();
+  const session = await requireAdminSession();
   if (!session) return NextResponse.json({ error: "Forbidden" }, { status: 403 });
   try {
     const { id } = await params;
@@ -51,6 +54,9 @@ export async function PATCH(
     const existing = await prisma.user.findUnique({ where: { id } });
     if (!existing) {
       return NextResponse.json({ error: "User not found" }, { status: 404 });
+    }
+    if (session.role === "admin" && existing.role === "super-admin") {
+      return NextResponse.json({ error: "Forbidden" }, { status: 403 });
     }
 
     if (!name || typeof name !== "string" || name.trim().length === 0) {
@@ -70,6 +76,9 @@ export async function PATCH(
         { error: "Invalid role" },
         { status: 400 }
       );
+    }
+    if (session.role === "admin" && role === "super-admin") {
+      return NextResponse.json({ error: "Forbidden" }, { status: 403 });
     }
 
     const data: {
@@ -133,10 +142,15 @@ export async function DELETE(
   _request: Request,
   { params }: { params: Promise<{ id: string }> }
 ) {
-  const session = await requireSuperAdmin();
+  const session = await requireAdminSession();
   if (!session) return NextResponse.json({ error: "Forbidden" }, { status: 403 });
   try {
     const { id } = await params;
+    const existing = await prisma.user.findUnique({ where: { id }, select: { role: true } });
+    if (!existing) return NextResponse.json({ error: "User not found" }, { status: 404 });
+    if (session.role === "admin" && existing.role === "super-admin") {
+      return NextResponse.json({ error: "Forbidden" }, { status: 403 });
+    }
     await prisma.user.delete({ where: { id } });
     return NextResponse.json({ success: true });
   } catch (error) {

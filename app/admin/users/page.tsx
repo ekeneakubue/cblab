@@ -37,6 +37,7 @@ function formatDate(iso: string) {
 export default function AdminUsersPage() {
   const [users, setUsers] = useState<User[]>([]);
   const [usersLoading, setUsersLoading] = useState(true);
+  const [currentRole, setCurrentRole] = useState<string | null>(null);
   const [modalOpen, setModalOpen] = useState(false);
   const [editingUser, setEditingUser] = useState<User | null>(null);
   const [form, setForm] = useState(emptyForm);
@@ -85,6 +86,16 @@ export default function AdminUsersPage() {
   };
 
   useEffect(() => {
+    (async () => {
+      try {
+        const res = await fetch("/api/admin/session");
+        if (!res.ok) return;
+        const data = await res.json().catch(() => ({}));
+        if (typeof data.role === "string") setCurrentRole(data.role);
+      } catch {
+        // ignore
+      }
+    })();
     fetchUsers();
   }, []);
 
@@ -434,7 +445,9 @@ export default function AdminUsersPage() {
               <option value="staff">Staff</option>
               <option value="manager">Manager</option>
               <option value="admin">Admin</option>
-              <option value="super-admin">Super admin</option>
+              {currentRole === "super-admin" && (
+                <option value="super-admin">Super admin</option>
+              )}
             </select>
           </div>
           <div>

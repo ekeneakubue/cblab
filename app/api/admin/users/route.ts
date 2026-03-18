@@ -1,16 +1,17 @@
 import { NextResponse } from "next/server";
 import bcrypt from "bcryptjs";
 import { prisma } from "@/lib/prisma";
-import { requireSuperAdmin } from "@/lib/auth";
+import { requireAdminSession } from "@/lib/auth";
 
 const ROLES = ["staff", "manager", "admin", "super-admin"] as const;
 
 export async function GET() {
-  const session = await requireSuperAdmin();
+  const session = await requireAdminSession();
   if (!session) return NextResponse.json({ error: "Forbidden" }, { status: 403 });
   try {
     const users = await prisma.user.findMany({
       orderBy: { createdAt: "desc" },
+      where: session.role === "admin" ? { NOT: { role: "super-admin" } } : undefined,
       select: {
         id: true,
         name: true,
@@ -31,7 +32,7 @@ export async function GET() {
 }
 
 export async function POST(request: Request) {
-  const session = await requireSuperAdmin();
+  const session = await requireAdminSession();
   if (!session) return NextResponse.json({ error: "Forbidden" }, { status: 403 });
   try {
     const body = await request.json();
@@ -60,6 +61,9 @@ export async function POST(request: Request) {
         { error: "Invalid role" },
         { status: 400 }
       );
+    }
+    if (session.role === "admin" && role === "super-admin") {
+      return NextResponse.json({ error: "Forbidden" }, { status: 403 });
     }
 
     const hashedPassword = await bcrypt.hash(password.trim(), 10);

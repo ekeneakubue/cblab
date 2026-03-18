@@ -10,6 +10,8 @@ export type StaffSession = {
   exp: number;
 };
 
+const ADMIN_UI_ROLES = ["admin", "super-admin"] as const;
+
 /**
  * Reads and validates the staff session cookie.
  * Returns the session payload or null if missing/invalid/expired.
@@ -34,11 +36,16 @@ export async function getStaffSession(): Promise<StaffSession | null> {
   }
 }
 
-/** Role required to access the admin dashboard */
-export const ADMIN_DASHBOARD_ROLE = "super-admin";
+/** Role required for full admin privileges */
+export const SUPER_ADMIN_ROLE = "super-admin";
 
-export function canAccessAdmin(session: StaffSession | null): boolean {
-  return session?.role === ADMIN_DASHBOARD_ROLE;
+/** Can access the admin UI at all (admin or super-admin). */
+export function canAccessAdminUI(session: StaffSession | null): boolean {
+  return ADMIN_UI_ROLES.includes(session?.role as (typeof ADMIN_UI_ROLES)[number]);
+}
+
+export function isSuperAdmin(session: StaffSession | null): boolean {
+  return session?.role === SUPER_ADMIN_ROLE;
 }
 
 /**
@@ -47,7 +54,16 @@ export function canAccessAdmin(session: StaffSession | null): boolean {
  */
 export async function requireSuperAdmin(): Promise<StaffSession | null> {
   const session = await getStaffSession();
-  return canAccessAdmin(session) ? session : null;
+  return isSuperAdmin(session) ? session : null;
+}
+
+/**
+ * Use for admin UI/API routes that admins + super-admins can access.
+ * For super-admin-only actions, keep using requireSuperAdmin().
+ */
+export async function requireAdminSession(): Promise<StaffSession | null> {
+  const session = await getStaffSession();
+  return canAccessAdminUI(session) ? session : null;
 }
 
 // --- Patient session (for /login) ---
