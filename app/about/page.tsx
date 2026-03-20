@@ -60,9 +60,8 @@ export default function AboutPage() {
           <section className="rounded-xl border border-brand-100 bg-brand-50/50 p-6">
             <h2 className="text-lg font-semibold text-brand-800">Our mission</h2>
             <p className="mt-3 text-brand-700">
-              To deliver accurate, timely, and accessible laboratory diagnostics that support 
-              clinical decisions, research, and patient care—closing the gap between principle 
-              and practice through precision, quality, and trust.
+              To provide quality, timely and affordable medical diagnostic services, 
+              enabled by research, education and state-of-the-art facilities.
             </p>
           </section>
           <section className="rounded-xl border border-brand-100 bg-brand-50/50 p-6">
